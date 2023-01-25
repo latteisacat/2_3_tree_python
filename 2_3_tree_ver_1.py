@@ -1,6 +1,5 @@
 class Node:
     last_referred = list()
-    top_of_node = None
 
     def __init__(self, data, parent=None):
         self.childs = dict()
@@ -95,23 +94,104 @@ class Node:
             left = min(self.data)
             right = max(self.data)
             if user_input in self.data:
-                return True
+                return True, self
             elif user_input < left:
+                Node.last_referred.append("left")
                 return self.childs["left"].search(user_input)
             elif user_input > right:
+                Node.last_referred.append("right")
                 return self.childs["right"].search(user_input)
             else:
+                Node.last_referred.append("mid")
                 return self.childs["mid"].search(user_input)
         else:
-            if self.data in user_input:
-                return True
+            if user_input in self.data:
+                return True, self
             else:
-                return False
+                return False, None
 
     def delete(self, user_input):
-        pass
+        Node.last_referred.clear()
+        is_it_exist, delete_node = self.search(user_input)
+        if is_it_exist:
+            if delete_node.childs:
+                if user_input == max(delete_node.data):
+                    right_subtree = delete_node.child["right"]
+                    Node.last_referred.append("right")
+                    delete_data_index = 1
+                else:
+                    right_subtree = delete_node.child["mid"]
+                    Node.last_referred.append("mid")
+                    delete_data_index = 0
 
-    def underflow(self, data):
+                successor_node = right_subtree.find_successor()
+                successor = successor_node.pop(0)
+                delete_node.data.pop(delete_data_index)
+                delete_node.data.append(successor)
+                delete_node.data.sort()
+
+                if not successor_node.data:
+                    successor_node.underflow()
+            else:
+                if user_input == max(delete_node.data):
+                    delete_node.data.pop()
+
+                else:
+                    delete_node.data.pop(0)
+                delete_node.data.sort()
+                if not delete_node.data:
+                    delete_node.underflow()
+
+        else:
+            print("Data does not exist")
+
+    def underflow(self):
+        index = Node.last_referred.pop()
+        if self.childs:
+            pass
+        else:
+            if index == "left":
+                if len(self.parent.data) == 2:
+                    if len(self.parent.childs["mid"].data) == 2:
+                        add_data = self.parent.childs["mid"].data.pop(0)
+                        left_child_data = self.parent.data.pop(0)
+                        self.parent.data.append(add_data)
+                        self.parent.data.sort()
+                        self.data.append(left_child_data)
+                    else:
+                        add_data = self.parent.childs["mid"].data.pop(0)
+                        left_child_data = self.parent.data.pop(0)
+                        self.data.append(left_child_data)
+                        self.data.append(add_data)
+                        self.data.sort()
+                        del self.parent.childs["mid"]
+
+                elif len(self.parent.data) == 1:
+                    if len(self.parent.childs["right"].data) == 2:
+                        add_data = self.parent.childs["right"].data.pop(0)
+                        left_child_data = self.parent.data.pop(0)
+                        self.parent.data.append(add_data)
+                        self.parent.data.sort()
+                        self.data.append(left_child_data)
+                    else:
+                        left_child_data = self.parent.data.pop(0)
+                        add_data = self.parent.childs["right"].data.pop(0)
+                        self.data.append(left_child_data)
+                        self.data.append(add_data)
+                        self.data.sort()
+                        self.parent.childs["underflow"] = self.parent.childs["left"]
+                        del self.parent.childs["left"]
+                        del self.parent.childs["right"]
+                        self.parent.underflow()
+
+    def find_successor(self):
+        if self.childs:
+            Node.last_referred.append("left")
+            self.childs["left"].find_successor()
+        else:
+            return self
+
+    def find_predecessor(self, node):
         pass
 
     def add(self, user_input):
@@ -141,10 +221,12 @@ tree.insert(9)
 tree.insert(10)
 tree.insert(6)
 tree.insert(6)
+tree.insert(11)
 print(tree.data)
 print(tree.childs["left"].data)
 print(tree.childs["right"].data)
 print(tree.childs["left"].childs["left"].data)
 print(tree.childs["left"].childs["right"].data)
 print(tree.childs["right"].childs["left"].data)
+print(tree.childs["right"].childs["mid"].data)
 print(tree.childs["right"].childs["right"].data)
