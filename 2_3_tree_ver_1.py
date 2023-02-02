@@ -286,7 +286,7 @@ class Node:
                             self.data.append(add_data)
                             self.data.sort()
                             self.parent.childs["underflow"] = self.parent.childs["right"]
-                            self.childs["left"] = self.parnet.childs["left"].childs["left"]
+                            self.childs["left"] = self.parent.childs["left"].childs["left"]
                             self.childs["mid"] = self.parent.childs["left"].childs["right"]
                             self.childs["right"] = self.childs["underflow"]
                             self.parent.childs["underflow"] = self.parent.childs["right"]
@@ -412,6 +412,11 @@ class Node:
             del self.childs["overflow"]
 
 
+def change_top(top_of_node):
+    if "underflow" in top_of_node.childs:
+        return top_of_node.childs["underflow"]
+
+
 tree = Node(1)
 tree.insert(4)
 tree.insert(5)
@@ -427,10 +432,8 @@ tree.delete(-1)
 tree.delete(1)
 tree.delete(5)
 tree.delete(4)
+tree = change_top(tree)
 print(tree.data)
-# print(tree.childs["left"].data)
-# print(tree.childs["right"].data)
-# print(tree.childs["left"].childs["left"].data)
-# print(tree.childs["left"].childs["right"].data)
-# print(tree.childs["right"].childs["left"].data)
-# print(tree.childs["right"].childs["right"].data)
+print(tree.childs["left"].data)
+print(tree.childs["mid"].data)
+print(tree.childs["right"].data)
