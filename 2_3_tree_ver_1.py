@@ -415,6 +415,8 @@ class Node:
 def change_top(top_of_node):
     if "underflow" in top_of_node.childs:
         return top_of_node.childs["underflow"]
+    else:
+        return top_of_node
 
 
 tree = Node(1)
@@ -429,8 +431,11 @@ tree.insert(6)
 tree.insert(11)
 
 tree.delete(-1)
+tree = change_top(tree)
 tree.delete(1)
+tree = change_top(tree)
 tree.delete(5)
+tree = change_top(tree)
 tree.delete(4)
 tree = change_top(tree)
 print(tree.data)
