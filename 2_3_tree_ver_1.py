@@ -147,9 +147,156 @@ class Node:
 
     def underflow(self):
         index = Node.last_referred.pop()
-        if self.childs:
-            pass
-        else:
+        if self.childs and self.parent is not None:
+            if index == "left":
+                if len(self.parent.data) == 2:
+                    if len(self.parent.childs["mid"].data) == 2:
+                        add_data = self.parent.childs["mid"].data.pop(0)
+                        left_child_data = self.parent.data.pop(0)
+                        self.parent.data.append(add_data)
+                        self.parent.data.sort()
+                        self.data.append(left_child_data)
+                        self.childs["right"] = self.parent.childs["mid"].childs["left"]
+                        self.childs["left"] = self.childs["underflow"]
+                        self.parent.childs["mid"].childs["left"] = self.parent.childs["mid"].childs["mid"]
+                        del self.parent.childs["mid"].childs["mid"]
+                        del self.childs["underflow"]
+                    else:
+                        add_data = self.parent.childs["mid"].data.pop(0)
+                        left_child_data = self.parent.data.pop(0)
+                        self.data.append(left_child_data)
+                        self.data.append(add_data)
+                        self.data.sort()
+                        self.childs["left"] = self.childs["underflow"]
+                        self.childs["mid"] = self.parent.childs["mid"].childs["left"]
+                        self.childs["right"] = self.parent.childs["mid"].childs["right"]
+                        del self.parent.childs["mid"].childs["left"]
+                        del self.parent.childs["mid"].childs["right"]
+                        del self.parent.childs["mid"]
+
+                elif len(self.parent.data) == 1:
+                    if len(self.parent.childs["right"].data) == 2:
+                        add_data = self.parent.childs["right"].data.pop(0)
+                        left_child_data = self.parent.data.pop(0)
+                        self.parent.data.append(add_data)
+                        self.parent.data.sort()
+                        self.data.append(left_child_data)
+                        self.childs["left"] = self.childs["underflow"]
+                        self.childs["right"] = self.parent.childs["right"].childs["left"]
+                        self.parent.childs["right"].childs["left"] = self.parent.childs["right"].childs["mid"]
+                        del self.childs["underflow"]
+                        del self.parent.childs["right"].childs["mid"]
+                    else:
+                        left_child_data = self.parent.data.pop(0)
+                        add_data = self.parent.childs["right"].data.pop(0)
+                        self.data.append(left_child_data)
+                        self.data.append(add_data)
+                        self.data.sort()
+                        self.childs["left"] = self.childs["underflow"]
+                        self.childs["mid"] = self.parent.childs["right"].childs["left"]
+                        self.childs["right"] = self.parent.childs["right"].childs["right"]
+                        self.parent.childs["underflow"] = self.parent.childs["left"]
+                        del self.parent.childs["left"]
+                        del self.parent.childs["right"].childs["left"]
+                        del self.parent.childs["right"].childs["right"]
+                        del self.parent.childs["right"]
+                        self.parent.underflow()
+
+            elif index == "mid":
+                if len(self.parent.childs["left"].data) == 2:
+                    add_data = self.parent.childs["left"].data.pop(1)
+                    mid_child_data = self.parent.data.pop(0)
+                    self.parent.data.append(add_data)
+                    self.parent.data.sort()
+                    self.data.append(mid_child_data)
+                    self.childs["left"] = self.parent.childs["left"].childs["right"]
+                    self.childs["right"] = self.childs["underflow"]
+                    self.parent.childs["left"].childs["right"] = self.parent.childs["left"].childs["mid"]
+                    del self.childs["underflow"]
+                    del self.parent.childs["left"].childs["mid"]
+
+                elif len(self.parent.childs["right"].data) == 2:
+                    add_data = self.parent.childs["right"].data.pop(0)
+                    mid_child_data = self.parent.data.pop(1)
+                    self.parent.data.append(add_data)
+                    self.parent.data.sort()
+                    self.data.append(mid_child_data)
+                    self.childs["right"] = self.parent.childs["right"].childs["left"]
+                    self.childs["left"] = self.childs["underflow"]
+                    self.parent.childs["right"].childs["left"] = self.parent.childs["right"].childs["mid"]
+                    del self.childs["underflow"]
+                    del self.parent.childs["right"].childs["mid"]
+
+                else:
+                    add_data = self.parent.childs["left"].data.pop(0)
+                    mid_child_data = self.parent.data.pop(0)
+                    self.data.append(add_data)
+                    self.data.append(mid_child_data)
+                    self.data.sort()
+                    self.childs["left"] = self.parent.childs["left"].childs["left"]
+                    self.childs["mid"] = self.parent.childs["left"].childs["right"]
+                    self.childs["right"] = self.childs["underflow"]
+                    self.parent.childs["left"] = self.parent.childs["mid"]
+                    del self.childs["underflow"]
+                    del self.parent.childs["mid"]
+
+            elif index == "right":
+                if len(self.parent.data) == 2:
+                    if len(self.parent.childs["mid"].data) == 2:
+                        add_data = self.parent.childs["mid"].data.pop(1)
+                        right_child_data = self.parent.data.pop(1)
+                        self.parent.data.append(add_data)
+                        self.parent.data.sort()
+                        self.data.append(right_child_data)
+                        self.childs["right"] = self.childs["underflow"]
+                        self.childs["left"] = self.parent.childs["mid"].childs["right"]
+                        self.parent.childs["mid"].childs["right"] = self.parent.childs["mid"].childs["mid"]
+                        del self.parent.childs["mid"].childs["mid"]
+                        del self.childs["underflow"]
+                    else:
+                        add_data = self.parent.childs["mid"].data.pop(0)
+                        right_child_data = self.parent.data.pop(1)
+                        self.data.append(right_child_data)
+                        self.data.append(add_data)
+                        self.data.sort()
+
+                        self.childs["right"] = self.childs["underflow"]
+                        self.childs["mid"] = self.parent.childs["mid"].childs["right"]
+                        self.childs["left"] = self.parent.childs["mid"].childs["left"]
+                        del self.parent.childs["mid"].childs["left"]
+                        del self.parent.childs["mid"].childs["right"]
+                        del self.parent.childs["mid"]
+
+                elif len(self.parent.data) == 1:
+                    if len(self.parent.childs["left"].data) == 2:
+                        add_data = self.parent.childs["left"].data.pop(1)
+                        right_child_data = self.parent.data.pop(0)
+                        self.parent.data.append(add_data)
+                        self.parent.data.sort()
+                        self.data.append(right_child_data)
+                        self.childs["right"] = self.childs["underflow"]
+                        self.childs["left"] = self.parent.childs["left"].childs["right"]
+                        self.parent.childs["left"].childs["right"] = self.parent.childs["left"].childs["mid"]
+                        del self.childs["underflow"]
+                        del self.parent.childs["left"].childs["mid"]
+                    else:
+                        right_child_data = self.parent.data.pop(0)
+                        add_data = self.parent.childs["left"].data.pop(0)
+                        self.data.append(right_child_data)
+                        self.data.append(add_data)
+                        self.data.sort()
+                        self.parent.childs["underflow"] = self.parent.childs["right"]
+                        self.childs["left"] = self.parnet.childs["left"].childs["left"]
+                        self.childs["mid"] = self.parent.childs["left"].childs["right"]
+                        self.childs["right"] = self.childs["underflow"]
+                        self.parent.childs["underflow"] = self.parent.childs["right"]
+                        del self.parent.childs["right"]
+                        del self.parent.childs["left"].childs["left"]
+                        del self.parent.childs["left"].childs["right"]
+                        del self.parent.childs["left"]
+                        self.parent.underflow()
+
+        elif not self.childs and self.parent is not None:
             if index == "left":
                 if len(self.parent.data) == 2:
                     if len(self.parent.childs["mid"].data) == 2:
@@ -184,15 +331,68 @@ class Node:
                         del self.parent.childs["right"]
                         self.parent.underflow()
 
+            elif index == "mid":
+                if len(self.parent.childs["left"].data) == 2:
+                    add_data = self.parent.childs["left"].data.pop(1)
+                    mid_child_data = self.parent.data.pop(0)
+                    self.parent.data.append(add_data)
+                    self.parent.data.sort()
+                    self.data.append(mid_child_data)
+                elif len(self.parent.childs["right"].data) == 2:
+                    add_data = self.parent.childs["right"].data.pop(0)
+                    mid_child_data = self.parent.data.pop(1)
+                    self.parent.data.append(add_data)
+                    self.parent.data.sort()
+                    self.data.append(mid_child_data)
+                else:
+                    add_data = self.parent.childs["left"].data.pop(0)
+                    mid_child_data = self.parent.data.pop(0)
+                    self.data.append(add_data)
+                    self.data.append(mid_child_data)
+                    self.data.sort()
+                    self.parent.childs["left"] = self.parent.childs["mid"]
+                    del self.parent.childs["mid"]
+
+            elif index == "right":
+                if len(self.parent.data) == 2:
+                    if len(self.parent.childs["mid"].data) == 2:
+                        add_data = self.parent.childs["mid"].data.pop(1)
+                        right_child_data = self.parent.data.pop(1)
+                        self.parent.data.append(add_data)
+                        self.parent.data.sort()
+                        self.data.append(right_child_data)
+                    else:
+                        add_data = self.parent.childs["mid"].data.pop(0)
+                        right_child_data = self.parent.data.pop(1)
+                        self.data.append(right_child_data)
+                        self.data.append(add_data)
+                        self.data.sort()
+                        del self.parent.childs["mid"]
+
+                elif len(self.parent.data) == 1:
+                    if len(self.parent.childs["left"].data) == 2:
+                        add_data = self.parent.childs["left"].data.pop(1)
+                        right_child_data = self.parent.data.pop(0)
+                        self.parent.data.append(add_data)
+                        self.parent.data.sort()
+                        self.data.append(right_child_data)
+                    else:
+                        right_child_data = self.parent.data.pop(0)
+                        add_data = self.parent.childs["left"].data.pop(0)
+                        self.data.append(right_child_data)
+                        self.data.append(add_data)
+                        self.data.sort()
+                        self.parent.childs["underflow"] = self.parent.childs["right"]
+                        del self.parent.childs["left"]
+                        del self.parent.childs["right"]
+                        self.parent.underflow()
+
     def find_successor(self):
         if self.childs:
             Node.last_referred.append("left")
             self.childs["left"].find_successor()
         else:
             return self
-
-    def find_predecessor(self, node):
-        pass
 
     def add(self, user_input):
         self.data.append(user_input)
@@ -222,11 +422,13 @@ tree.insert(10)
 tree.insert(6)
 tree.insert(6)
 tree.insert(11)
+
+tree.delete(-1)
+tree.delete(1)
 print(tree.data)
 print(tree.childs["left"].data)
 print(tree.childs["right"].data)
 print(tree.childs["left"].childs["left"].data)
 print(tree.childs["left"].childs["right"].data)
 print(tree.childs["right"].childs["left"].data)
-print(tree.childs["right"].childs["mid"].data)
 print(tree.childs["right"].childs["right"].data)
